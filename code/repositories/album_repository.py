@@ -5,7 +5,7 @@ from repositories import artist_repository
 
 def save(album):
     sql = "INSERT INTO albums (title, genre, artist_id) VALUES (%s, %s, %s) RETURNING *"
-    values = [album.title, album.genre, album.artist_id]
+    values = [album.title, album.genre, album.artist.id]
     results = run_sql(sql, values)
     id = results[0]['id']
     album.id = id
@@ -22,6 +22,18 @@ def select_all():
         album = Album(row['title'], row['genre'], artist, row['id'])
         albums.append(album)
     return albums
+
+def list_albums_by_artist(artist):
+    albums_by_artist = []
+
+    sql = "SELECT * FROM albums WHERE artist_id = %s"
+    values = [artist.id]
+    results = run_sql(sql, values)
+
+    for row in results:
+        album = Album(row['title'], row['genre'], artist, row['id'])
+        albums_by_artist.append(album)
+    return albums_by_artist
 
 def select(id):
     album = None
